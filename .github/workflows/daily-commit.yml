@@ -3,11 +3,13 @@ name: Daily Contribution Commit
 on:
   schedule:
     - cron: "30 11 * * *"   # runs daily at 11:30 UTC → 5:00 PM IST
-  workflow_dispatch:         # allows manual trigger too
+  workflow_dispatch:
 
 jobs:
   commit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # 👈 allows this workflow to push commits
 
     steps:
       - name: Checkout repository
@@ -21,4 +23,9 @@ jobs:
       - name: Create empty commit
         run: |
           git commit --allow-empty -m "chore: daily contribution"
-          git push
+
+      - name: Push changes
+        run: |
+          git push https://github.com/${{ github.repository }} HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
